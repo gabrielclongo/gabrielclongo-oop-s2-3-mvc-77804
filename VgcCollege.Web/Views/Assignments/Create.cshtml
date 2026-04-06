@@ -1,58 +1,42 @@
 ﻿@model VgcCollege.Web.Models.Assignment
 
 @{
-    ViewData["Title"] = "Create Assignment";
+    ViewData["Title"] = "Create";
 }
 
-<h2 class="text-center mt-4">Create Assignment</h2>
+<h1>Create</h1>
 
-<div class="container">
-
-    <form action="/Assignments/Create" method="post">
-
-
-        @Html.AntiForgeryToken()
-
-        <!-- ERROS -->
-        <div asp-validation-summary="All" class="text-danger"></div>
-
-        <!-- TITLE -->
-        <div class="form-group mb-3">
-            <label class="form-label">Title</label>
-            <input name="Title" class="form-control" required />
-        </div>
-
-        <!-- COURSE -->
-        <div class="form-group mb-3">
-            <label class="form-label">Course</label>
-            <select name="CourseId" class="form-control" required>
-                @foreach (var item in ViewBag.CourseId)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </select>
-        </div>
-
-        <!-- MAX SCORE -->
-        <div class="form-group mb-3">
-            <label class="form-label">Max Score</label>
-            <input name="MaxScore" type="number" class="form-control" required />
-        </div>
-
-        <!-- BOTÃO (FORÇADO) -->
-        <button type="submit"
-                class="btn btn-success w-100"
-                onclick="this.form.submit();">
-            Create Assignment
-        </button>
-
-    </form>
-
+<h4>Assignment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseId" class="control-label"></label>
+                <select asp-for="CourseId" class ="form-control" asp-items="ViewBag.CourseId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxScore" class="control-label"></label>
+                <input asp-for="MaxScore" class="form-control" />
+                <span asp-validation-for="MaxScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
 </div>
 
-<!-- SCRIPT EXTRA (GARANTE SUBMIT) -->
-<script>
-    document.querySelector("form").addEventListener("submit", function () {
-        console.log("Form enviado!");
-    });
-</script>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

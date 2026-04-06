@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +11,7 @@ using VgcCollege.Web.Models;
 
 namespace VgcCollege.Web.Controllers
 {
-    [Authorize(Roles = "Admin,Faculty")]
+    [Authorize(Roles = "Admin,Faculty")] // 🔒 PROTEÇÃO
     public class ExamsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,30 +21,142 @@ namespace VgcCollege.Web.Controllers
             _context = context;
         }
 
+        // ✅ LIST
         public async Task<IActionResult> Index()
         {
-            var exams = _context.Exams.Include(e => e.Course);
-            return View(await exams.ToListAsync());
+            var exams = await _context.Exams
+                .Include(e => e.Course)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View(exams);
         }
 
+        // ✅ DETAILS
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var exam = await _context.Exams
+                .Include(e => e.Course)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (exam == null) return NotFound();
+
+            return View(exam);
+        }
+
+        // ✅ GET CREATE
         public IActionResult Create()
         {
-            ViewBag.CourseId = new SelectList(_context.Courses, "Id", "Name");
+            LoadCourses();
             return View();
         }
 
+        // ✅ POST CREATE
         [HttpPost]
-        public async Task<IActionResult> Create(Exam exam)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Title,CourseId,MaxScore,Date,ResultsReleased")] Exam exam)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(exam);
+                _context.Exams.Add(exam);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.CourseId = new SelectList(_context.Courses, "Id", "Name", exam.CourseId);
+            LoadCourses(exam);
             return View(exam);
+        }
+
+        // ✅ GET EDIT
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var exam = await _context.Exams.FindAsync(id);
+            if (exam == null) return NotFound();
+
+            LoadCourses(exam);
+            return View(exam);
+        }
+
+        // ✅ POST EDIT
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CourseId,MaxScore,Date,ResultsReleased")] Exam exam)
+        {
+            if (id != exam.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Exams.Update(exam);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ExamExists(exam.Id))
+                        return NotFound();
+                    else
+                        throw;
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            LoadCourses(exam);
+            return View(exam);
+        }
+
+        // ✅ GET DELETE
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var exam = await _context.Exams
+                .Include(e => e.Course)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (exam == null) return NotFound();
+
+            return View(exam);
+        }
+
+        // ✅ POST DELETE (🔒 só Admin)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var exam = await _context.Exams.FindAsync(id);
+
+            if (exam != null)
+            {
+                _context.Exams.Remove(exam);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ✅ MÉTODO AUXILIAR
+        private void LoadCourses(Exam? exam = null)
+        {
+            ViewData["CourseId"] = new SelectList(
+                _context.Courses,
+                "Id",
+                "Name",
+                exam?.CourseId
+            );
+        }
+
+        private bool ExamExists(int id)
+        {
+            return _context.Exams.Any(e => e.Id == id);
         }
     }
 }

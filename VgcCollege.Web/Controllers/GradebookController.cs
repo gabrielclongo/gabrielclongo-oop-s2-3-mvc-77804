@@ -15,15 +15,35 @@ namespace VgcCollege.Web.Controllers
             _context = context;
         }
 
+        // ✅ VIEW GERAL (Admin / Faculty)
+        [Authorize(Roles = "Admin,Faculty")]
         public async Task<IActionResult> Index()
         {
             var data = await _context.AssignmentResults
                 .Include(a => a.StudentProfile)
                 .Include(a => a.Assignment)
                     .ThenInclude(a => a.Course)
+                .AsNoTracking()
                 .ToListAsync();
 
             return View(data);
+        }
+
+        // ✅ VIEW DO PRÓPRIO ALUNO
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> MyGrades()
+        {
+            var userId = User?.Identity?.Name;
+
+            var data = await _context.AssignmentResults
+                .Include(a => a.StudentProfile)
+                .Include(a => a.Assignment)
+                    .ThenInclude(a => a.Course)
+                .Where(a => a.StudentProfile.IdentityUserId == userId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View("Index", data); // reutiliza mesma view
         }
     }
 }
