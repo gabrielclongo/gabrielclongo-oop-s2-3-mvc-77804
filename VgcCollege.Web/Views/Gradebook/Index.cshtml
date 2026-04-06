@@ -1,0 +1,53 @@
+﻿@model VgcCollege.Web.Models.GradebookViewModel
+
+<h2 class="text-center mt-4">📊 Gradebook</h2>
+
+<hr />
+
+<!-- ASSIGNMENTS -->
+<h4>Assignments</h4>
+<table class="table table-bordered text-center">
+    <thead class="table-primary">
+        <tr>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Assignment</th>
+            <th>Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.AssignmentResults)
+        {
+            <tr>
+                <td>@item.StudentProfile?.Name</td>
+                <td>@item.Assignment?.Course?.Name</td>
+                <td>@item.Assignment?.Title</td>
+                <td>@item.Grade</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- EXAMS -->
+<h4 class="mt-4">Exams</h4>
+<table class="table table-bordered text-center">
+    <thead class="table-success">
+        <tr>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Exam</th>
+            <th>Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ExamResults)
+        {
+            <tr>
+                <td>@item.StudentProfile?.Name</td>
+                <td>@item.Exam?.Course?.Name</td>
+                <td>@item.Exam?.Title</td>
+                <td>@item.Grade</td>
+            </tr>
+        }
+    </tbody>
+</table>

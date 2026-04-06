@@ -1,0 +1,33 @@
+﻿@model IEnumerable<VgcCollege.Web.Models.Exam>
+
+<h2>Exams</h2>
+
+<a asp-action="Create" class="btn btn-success mb-2">+ Add Exam</a>
+
+<table class="table table-striped">
+    <tr>
+        <th>Title</th>
+        <th>Course</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var e in Model)
+    {
+        <tr>
+            <td>@e.Title</td>
+            <td>@e.Course?.Name</td>
+            <td>
+                @(e.ResultsReleased ? "Released" : "Provisional")
+            </td>
+            <td>
+                @if (!e.ResultsReleased)
+                {
+                    <a asp-action="Release" asp-route-id="@e.Id" class="btn btn-warning btn-sm">
+                        Release Results
+                    </a>
+                }
+            </td>
+        </tr>
+    }
+</table>

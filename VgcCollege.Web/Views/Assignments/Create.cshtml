@@ -1,0 +1,58 @@
+﻿@model VgcCollege.Web.Models.Assignment
+
+@{
+    ViewData["Title"] = "Create Assignment";
+}
+
+<h2 class="text-center mt-4">Create Assignment</h2>
+
+<div class="container">
+
+    <form action="/Assignments/Create" method="post">
+
+
+        @Html.AntiForgeryToken()
+
+        <!-- ERROS -->
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <!-- TITLE -->
+        <div class="form-group mb-3">
+            <label class="form-label">Title</label>
+            <input name="Title" class="form-control" required />
+        </div>
+
+        <!-- COURSE -->
+        <div class="form-group mb-3">
+            <label class="form-label">Course</label>
+            <select name="CourseId" class="form-control" required>
+                @foreach (var item in ViewBag.CourseId)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+
+        <!-- MAX SCORE -->
+        <div class="form-group mb-3">
+            <label class="form-label">Max Score</label>
+            <input name="MaxScore" type="number" class="form-control" required />
+        </div>
+
+        <!-- BOTÃO (FORÇADO) -->
+        <button type="submit"
+                class="btn btn-success w-100"
+                onclick="this.form.submit();">
+            Create Assignment
+        </button>
+
+    </form>
+
+</div>
+
+<!-- SCRIPT EXTRA (GARANTE SUBMIT) -->
+<script>
+    document.querySelector("form").addEventListener("submit", function () {
+        console.log("Form enviado!");
+    });
+</script>

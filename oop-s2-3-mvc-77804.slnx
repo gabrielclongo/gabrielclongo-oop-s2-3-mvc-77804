@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="VgcCollege.Tests/VgcCollege.Tests.csproj" />
+  <Project Path="VgcCollege.Web/VgcCollege.Web.csproj" />
+</Solution>

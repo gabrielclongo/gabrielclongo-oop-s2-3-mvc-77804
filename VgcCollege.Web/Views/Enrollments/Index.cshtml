@@ -1,0 +1,23 @@
+﻿@model IEnumerable<VgcCollege.Web.Models.CourseEnrollment>
+
+<h2 class="text-center mt-4">Enrolments</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">+ Enrol Student</a>
+
+<table class="table table-bordered text-center">
+    <thead class="table-dark">
+        <tr>
+            <th>Student</th>
+            <th>Course</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.StudentProfile?.Name</td>
+                <td>@e.Course?.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
