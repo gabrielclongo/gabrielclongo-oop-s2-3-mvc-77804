@@ -21,17 +21,10 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
 
-                <!-- MENU -->
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Enrollments" asp-action="Index">
-                            Enrollments
-                        </a>
-                    </li>
-                }
+                <!-- 🔥 MENU PRINCIPAL -->
+                <ul class="navbar-nav">
 
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <!-- ADMIN + FACULTY -->
                         @if (User.IsInRole("Admin") || User.IsInRole("Faculty"))
@@ -45,6 +38,10 @@
                             </li>
 
                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="Enrollments" asp-action="Index">Enrollments</a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a class="nav-link" asp-controller="Assignments" asp-action="Index">Assignments</a>
                             </li>
 
@@ -53,58 +50,73 @@
                             </li>
                         }
 
-                        <!-- STUDENT -->
+                        <!-- 👨‍🎓 STUDENT -->
                         @if (User.IsInRole("Student"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Gradebook" asp-action="Index">Gradebook</a>
+                                <a class="nav-link" asp-controller="Assignments" asp-action="MyAssignments">
+                                    My Assignments
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Exams" asp-action="MyExams">
+                                    My Exams
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Gradebook" asp-action="MyGrades">
+                                    My Grades
+                                </a>
                             </li>
                         }
                     }
+
                 </ul>
 
-                <!-- LOGIN / LOGOUT -->
-            <ul class="navbar-nav ms-auto">
+                <!-- 🔐 LOGIN / LOGOUT -->
+                <ul class="navbar-nav ms-auto">
 
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                    <li class="nav-item">
-                        <span class="nav-link text-white">
-                            👋 Hello @User.Identity.Name
-                        </span>
-                    </li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <span class="nav-link text-white">
+                                👋 Hello @User.Identity.Name
+                            </span>
+                        </li>
 
-                    <li class="nav-item">
-                        <form asp-area="Identity"
-                              asp-page="/Account/Logout"
-                              method="post"
-                              class="d-inline">
-                            <button type="submit" class="btn btn-danger btn-sm ms-2">
-                                Logout
-                            </button>
-                        </form>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item">
-                        <a class="nav-link text-white"
-                               asp-area="Identity"
-                               asp-page="/Account/Login">
-                            Login
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <form asp-area="Identity"
+                                  asp-page="/Account/Logout"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm ms-2">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Login">
+                                Login
+                            </a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link text-white"
-                               asp-area="Identity"
-                               asp-page="/Account/Register">
-                            Register
-                        </a>
-                    </li>
-                }
+                        <li class="nav-item">
+                            <a class="nav-link text-white"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Register">
+                                Register
+                            </a>
+                        </li>
+                    }
 
-            </ul>
+                </ul>
 
             </div>
         </div>

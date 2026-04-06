@@ -8,7 +8,9 @@ public class Assignment
 
     public int CourseId { get; set; }
 
-    public int? MaxScore { get; set; }   // 👈 IMPORTANTE
+    public int? MaxScore { get; set; }   
 
     public Course? Course { get; set; }
+
+    public DateTime DueDate { get; set; }
 }

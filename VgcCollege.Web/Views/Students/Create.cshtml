@@ -8,22 +8,62 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
 
-            
             @Html.AntiForgeryToken()
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <!-- 🔥 USER (Identity) -->
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label>User Account</label>
+                <select asp-for="IdentityUserId"
+                        asp-items="ViewBag.IdentityUserId"
+                        class="form-control">
+                    <option value="">-- Select User --</option>
+                </select>
+            </div>
+
+            <!-- NAME -->
+            <div class="form-group mt-3">
+                <label asp-for="Name"></label>
                 <input asp-for="Name" class="form-control" placeholder="Enter student name" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
+            <!-- EMAIL -->
             <div class="form-group mt-3">
-                
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" placeholder="Enter email" />
+            </div>
+
+            <!-- PHONE -->
+            <div class="form-group mt-3">
+                <label asp-for="Phone"></label>
+                <input asp-for="Phone" class="form-control" placeholder="Enter phone number" />
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="form-group mt-3">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" class="form-control" placeholder="Enter address" />
+            </div>
+
+            <!-- DOB -->
+            <div class="form-group mt-3">
+                <label asp-for="DOB"></label>
+                <input asp-for="DOB" type="date" class="form-control" />
+            </div>
+
+            <!-- STUDENT NUMBER -->
+            <div class="form-group mt-3">
+                <label asp-for="StudentNumber"></label>
+                <input asp-for="StudentNumber" class="form-control" placeholder="e.g. STU12345" />
+            </div>
+
+            <!-- SUBMIT -->
+            <div class="form-group mt-4">
                 <input type="submit" value="Create" class="btn btn-success" />
             </div>
 

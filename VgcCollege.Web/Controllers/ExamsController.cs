@@ -11,7 +11,7 @@ using VgcCollege.Web.Models;
 
 namespace VgcCollege.Web.Controllers
 {
-    [Authorize(Roles = "Admin,Faculty")] // 🔒 PROTEÇÃO
+    [Authorize]
     public class ExamsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,7 +21,8 @@ namespace VgcCollege.Web.Controllers
             _context = context;
         }
 
-        // ✅ LIST
+        // 🔒 ADMIN / FACULTY
+        [Authorize(Roles = "Admin,Faculty")]
         public async Task<IActionResult> Index()
         {
             var exams = await _context.Exams
@@ -32,7 +33,27 @@ namespace VgcCollege.Web.Controllers
             return View(exams);
         }
 
-        // ✅ DETAILS
+        // 👨‍🎓 STUDENT
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> MyExams()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            var exams = await _context.Exams
+                .Include(e => e.Course)
+                .Where(e =>
+                    e.ResultsReleased &&
+                    _context.CourseEnrollments.Any(en =>
+                        en.CourseId == e.CourseId &&
+                        en.StudentProfile.IdentityUserId == userId))
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View("Index", exams);
+        }
+
+        // 🔓 TODOS LOGADOS
+        [Authorize(Roles = "Admin,Faculty,Student")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -47,16 +68,17 @@ namespace VgcCollege.Web.Controllers
             return View(exam);
         }
 
-        // ✅ GET CREATE
+        // 🔒 ADMIN / FACULTY
+        [Authorize(Roles = "Admin,Faculty")]
         public IActionResult Create()
         {
             LoadCourses();
             return View();
         }
 
-        // ✅ POST CREATE
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Faculty")]
         public async Task<IActionResult> Create([Bind("Id,Title,CourseId,MaxScore,Date,ResultsReleased")] Exam exam)
         {
             if (ModelState.IsValid)
@@ -70,7 +92,8 @@ namespace VgcCollege.Web.Controllers
             return View(exam);
         }
 
-        // ✅ GET EDIT
+        // 🔒 ADMIN / FACULTY
+        [Authorize(Roles = "Admin,Faculty")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -82,9 +105,9 @@ namespace VgcCollege.Web.Controllers
             return View(exam);
         }
 
-        // ✅ POST EDIT
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Faculty")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CourseId,MaxScore,Date,ResultsReleased")] Exam exam)
         {
             if (id != exam.Id) return NotFound();
@@ -111,7 +134,8 @@ namespace VgcCollege.Web.Controllers
             return View(exam);
         }
 
-        // ✅ GET DELETE
+        // 🔒 ADMIN / FACULTY
+        [Authorize(Roles = "Admin,Faculty")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -126,7 +150,7 @@ namespace VgcCollege.Web.Controllers
             return View(exam);
         }
 
-        // ✅ POST DELETE (🔒 só Admin)
+        // 🔒 SÓ ADMIN
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -143,7 +167,6 @@ namespace VgcCollege.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ✅ MÉTODO AUXILIAR
         private void LoadCourses(Exam? exam = null)
         {
             ViewData["CourseId"] = new SelectList(

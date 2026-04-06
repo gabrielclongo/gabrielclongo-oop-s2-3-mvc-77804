@@ -1,21 +1,17 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using VgcCollege.Web.Data;
+using VgcCollege.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -------------------- DATABASE (SQLite) --------------------
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Login");
-    options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Register");
-});
 
-// -------------------- IDENTITY --------------------
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -23,19 +19,21 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// -------------------- MVC + 🔐 GLOBAL AUTH --------------------
+
 builder.Services.AddControllersWithViews(options =>
 {
     var policy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
 
-   
+    options.Filters.Add(new AuthorizeFilter(policy)); 
 });
+
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// -------------------- MIDDLEWARE --------------------
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -50,24 +48,25 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// -------------------- ROUTES --------------------
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 
-// -------------------- ROLES + USERS AUTO --------------------
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var context = services.GetRequiredService<ApplicationDbContext>();
 
+   
     string[] roles = { "Admin", "Faculty", "Student" };
 
-    // 🔹 Criar roles
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
@@ -88,19 +87,11 @@ using (var scope = app.Services.CreateScope())
         };
 
         var result = await userManager.CreateAsync(admin, "Admin123!");
-
         if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(admin, "Admin");
-        }
-    }
-    else
-    {
-        if (!await userManager.IsInRoleAsync(admin, "Admin"))
             await userManager.AddToRoleAsync(admin, "Admin");
     }
 
-    // ================= STUDENT =================
+   
     var studentEmail = "student@test.com";
     var student = await userManager.FindByEmailAsync(studentEmail);
 
@@ -114,19 +105,11 @@ using (var scope = app.Services.CreateScope())
         };
 
         var result = await userManager.CreateAsync(student, "Student123!");
-
         if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(student, "Student");
-        }
-    }
-    else
-    {
-        if (!await userManager.IsInRoleAsync(student, "Student"))
             await userManager.AddToRoleAsync(student, "Student");
     }
 
-    // ================= FACULTY =================
+   
     var facultyEmail = "faculty@test.com";
     var faculty = await userManager.FindByEmailAsync(facultyEmail);
 
@@ -140,16 +123,19 @@ using (var scope = app.Services.CreateScope())
         };
 
         var result = await userManager.CreateAsync(faculty, "Faculty123!");
-
         if (result.Succeeded)
-        {
             await userManager.AddToRoleAsync(faculty, "Faculty");
-        }
     }
-    else
+
+    
+    if (!context.Branches.Any())
     {
-        if (!await userManager.IsInRoleAsync(faculty, "Faculty"))
-            await userManager.AddToRoleAsync(faculty, "Faculty");
+        context.Branches.AddRange(
+            new Branch { Name = "Main Campus", Address = "Dublin" },
+            new Branch { Name = "North Campus", Address = "Cork" }
+        );
+
+        context.SaveChanges();
     }
 }
 

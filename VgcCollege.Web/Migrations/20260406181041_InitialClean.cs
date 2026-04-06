@@ -51,16 +51,17 @@ namespace VgcCollege.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Courses",
+                name: "Branches",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Address = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.PrimaryKey("PK_Branches", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,6 +171,27 @@ namespace VgcCollege.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FacultyProfiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    IdentityUserId = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Email = table.Column<string>(type: "TEXT", nullable: true),
+                    Phone = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FacultyProfiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FacultyProfiles_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Students",
                 columns: table => new
                 {
@@ -190,15 +212,38 @@ namespace VgcCollege.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Courses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    BranchId = table.Column<int>(type: "INTEGER", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Courses_Branches_BranchId",
+                        column: x => x.BranchId,
+                        principalTable: "Branches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Assignments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    MaxScore = table.Column<int>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: true),
                     CourseId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Grade = table.Column<double>(type: "REAL", nullable: false)
+                    MaxScore = table.Column<int>(type: "INTEGER", nullable: true),
+                    DueDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CourseId1 = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -209,6 +254,45 @@ namespace VgcCollege.Web.Migrations
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Assignments_Courses_CourseId1",
+                        column: x => x.CourseId1,
+                        principalTable: "Courses",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseEnrollments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    StudentProfileId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CourseId = table.Column<int>(type: "INTEGER", nullable: false),
+                    EnrolDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", nullable: true),
+                    CourseId1 = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseEnrollments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseEnrollments_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseEnrollments_Courses_CourseId1",
+                        column: x => x.CourseId1,
+                        principalTable: "Courses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CourseEnrollments_Students_StudentProfileId",
+                        column: x => x.StudentProfileId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -217,9 +301,12 @@ namespace VgcCollege.Web.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: true),
                     CourseId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ResultsReleased = table.Column<bool>(type: "INTEGER", nullable: false)
+                    MaxScore = table.Column<int>(type: "INTEGER", nullable: true),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ResultsReleased = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CourseId1 = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -230,32 +317,11 @@ namespace VgcCollege.Web.Migrations
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Enrolments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    StudentProfileId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CourseId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Enrolments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Enrolments_Courses_CourseId",
-                        column: x => x.CourseId,
+                        name: "FK_Exams_Courses_CourseId1",
+                        column: x => x.CourseId1,
                         principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Enrolments_Students_StudentProfileId",
-                        column: x => x.StudentProfileId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -266,7 +332,8 @@ namespace VgcCollege.Web.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     AssignmentId = table.Column<int>(type: "INTEGER", nullable: false),
                     StudentProfileId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Grade = table.Column<double>(type: "REAL", nullable: false)
+                    Grade = table.Column<double>(type: "REAL", nullable: false),
+                    Feedback = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -282,6 +349,27 @@ namespace VgcCollege.Web.Migrations
                         column: x => x.StudentProfileId,
                         principalTable: "Students",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AttendanceRecords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CourseEnrollmentId = table.Column<int>(type: "INTEGER", nullable: false),
+                    WeekNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    Present = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AttendanceRecords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AttendanceRecords_CourseEnrollments_CourseEnrollmentId",
+                        column: x => x.CourseEnrollmentId,
+                        principalTable: "CourseEnrollments",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -291,9 +379,10 @@ namespace VgcCollege.Web.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    StudentProfileId = table.Column<int>(type: "INTEGER", nullable: false),
                     ExamId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Grade = table.Column<double>(type: "REAL", nullable: false)
+                    StudentProfileId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Score = table.Column<int>(type: "INTEGER", nullable: false),
+                    Grade = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -309,7 +398,7 @@ namespace VgcCollege.Web.Migrations
                         column: x => x.StudentProfileId,
                         principalTable: "Students",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -365,14 +454,34 @@ namespace VgcCollege.Web.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrolments_CourseId",
-                table: "Enrolments",
+                name: "IX_Assignments_CourseId1",
+                table: "Assignments",
+                column: "CourseId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttendanceRecords_CourseEnrollmentId",
+                table: "AttendanceRecords",
+                column: "CourseEnrollmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseEnrollments_CourseId",
+                table: "CourseEnrollments",
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrolments_StudentProfileId",
-                table: "Enrolments",
+                name: "IX_CourseEnrollments_CourseId1",
+                table: "CourseEnrollments",
+                column: "CourseId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseEnrollments_StudentProfileId",
+                table: "CourseEnrollments",
                 column: "StudentProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_BranchId",
+                table: "Courses",
+                column: "BranchId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExamResults_ExamId",
@@ -388,6 +497,16 @@ namespace VgcCollege.Web.Migrations
                 name: "IX_Exams_CourseId",
                 table: "Exams",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Exams_CourseId1",
+                table: "Exams",
+                column: "CourseId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacultyProfiles_IdentityUserId",
+                table: "FacultyProfiles",
+                column: "IdentityUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_IdentityUserId",
@@ -417,16 +536,22 @@ namespace VgcCollege.Web.Migrations
                 name: "AssignmentResults");
 
             migrationBuilder.DropTable(
-                name: "Enrolments");
+                name: "AttendanceRecords");
 
             migrationBuilder.DropTable(
                 name: "ExamResults");
+
+            migrationBuilder.DropTable(
+                name: "FacultyProfiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Assignments");
+
+            migrationBuilder.DropTable(
+                name: "CourseEnrollments");
 
             migrationBuilder.DropTable(
                 name: "Exams");
@@ -439,6 +564,9 @@ namespace VgcCollege.Web.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Branches");
         }
     }
 }

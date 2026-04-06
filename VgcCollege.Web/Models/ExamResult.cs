@@ -6,16 +6,14 @@ namespace VgcCollege.Web.Models
     {
         public int Id { get; set; }
 
-        
-        public int StudentProfileId { get; set; }
-        public StudentProfile StudentProfile { get; set; }
-
-       
         public int ExamId { get; set; }
-        public Exam Exam { get; set; }
+        public Exam? Exam { get; set; }
 
-        
-        [Range(0, 100)]
-        public double Grade { get; set; }
+        public int StudentProfileId { get; set; }
+        public StudentProfile? StudentProfile { get; set; }
+
+        public int Score { get; set; }
+
+        public string? Grade { get; set; } 
     }
 }

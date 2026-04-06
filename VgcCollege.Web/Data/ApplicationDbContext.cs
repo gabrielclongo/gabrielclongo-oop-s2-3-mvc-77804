@@ -20,6 +20,9 @@ namespace VgcCollege.Web.Data
         public DbSet<AssignmentResult> AssignmentResults { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
+        public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+        public DbSet<Branch> Branches { get; set; }
+        public DbSet<FacultyProfile> FacultyProfiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

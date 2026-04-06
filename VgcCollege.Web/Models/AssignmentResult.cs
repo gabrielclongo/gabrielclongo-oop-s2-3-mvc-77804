@@ -15,5 +15,7 @@ namespace VgcCollege.Web.Models
         [Range(0, 100)]
     
         public double Grade { get; set; }
+
+        public string? Feedback { get; set; }
     }
 }

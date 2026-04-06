@@ -11,5 +11,8 @@ namespace VgcCollege.Web.Models
 
         public int CourseId { get; set; }
         public Course? Course { get; set; }
+
+        public DateTime EnrolDate { get; set; }
+        public string? Status { get; set; }
     }
 }

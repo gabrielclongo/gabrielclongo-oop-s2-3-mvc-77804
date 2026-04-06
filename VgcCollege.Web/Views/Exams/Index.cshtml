@@ -21,6 +21,15 @@
         {
             <tr>
                 <td>@item.Title</td>
+
+                @if (item.ResultsReleased)
+                {
+                    <span class="badge bg-success">Released</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning">Provisional</span>
+                }
                 <td>@item.Course?.Name</td>
                 <td class="text-center">
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
